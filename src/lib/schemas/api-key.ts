@@ -3,14 +3,14 @@ import { z } from "zod";
 // ─── Enums ─────────────────────────────────────────────────────────────────
 export const apiKeyProviderEnum = z.enum(
   ["openai", "anthropic", "google", "mistral", "groq", "custom"],
-  "El proveedor es requerido"
+  "El proveedor es requerido",
 );
 
 // ─── Base (DB record shape) ────────────────────────────────────────────────
 export const apiKeySchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid(),
-  project_id: z.string().uuid().optional(), // null = org-level key
+  id: z.uuid(),
+  user_id: z.uuid(),
+  project_id: z.uuid().optional(), // null = org-level key
   provider: apiKeyProviderEnum,
   name: z
     .string()
@@ -19,9 +19,9 @@ export const apiKeySchema = z.object({
   // Stored encrypted; masked in responses (e.g. "sk-...ab12")
   key_preview: z.string().max(20).optional(),
   is_active: z.boolean().default(true),
-  last_used_at: z.string().datetime().nullable().optional(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  last_used_at: z.iso.datetime().nullable().optional(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
 });
 
 // ─── Create form ───────────────────────────────────────────────────────────

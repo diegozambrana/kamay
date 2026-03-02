@@ -15,17 +15,17 @@ export const pipelineStepTypeEnum = z.enum([
 
 // ─── Step ──────────────────────────────────────────────────────────────────
 export const pipelineStepSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   type: pipelineStepTypeEnum,
-  prompt_id: z.string().uuid().optional(),
+  prompt_id: z.uuid().optional(),
   order: z.number().int().min(0),
   config: z.record(z.string(), z.unknown()).default({}),
 });
 
 // ─── Base (DB record shape) ────────────────────────────────────────────────
 export const pipelineSchema = z.object({
-  id: z.string().uuid(),
-  project_id: z.string().uuid(),
+  id: z.uuid(),
+  project_id: z.uuid(),
   name: z
     .string()
     .min(1, "El nombre es requerido")
@@ -33,8 +33,8 @@ export const pipelineSchema = z.object({
   description: z.string().max(500, "Máximo 500 caracteres").optional(),
   status: pipelineStatusEnum.default("draft"),
   steps: z.array(pipelineStepSchema).default([]),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
 });
 
 // ─── Create form ───────────────────────────────────────────────────────────

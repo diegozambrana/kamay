@@ -1,32 +1,41 @@
 import { z } from "zod";
 
+const optionalImageUrlSchema = z.preprocess(
+  (value) => (value === "" ? null : value),
+  z.string().url("URL inválida").nullable().optional(),
+);
+
 // ─── Base (DB record shape) ────────────────────────────────────────────────
 export const projectSchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  id: z.uuid(),
+  user_id: z.uuid(),
   name: z
     .string()
     .min(1, "El nombre es requerido")
     .max(100, "Máximo 100 caracteres"),
-  description: z.string().max(500, "Máximo 500 caracteres").optional(),
-  slug: z
-    .string()
-    .min(1)
-    .max(100)
-    .regex(/^[a-z0-9-]+$/, "Solo letras minúsculas, números y guiones"),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  description: z.string().max(500, "Máximo 500 caracteres").nullable().optional(),
+  thumbnail_url: optionalImageUrlSchema,
+  is_public: z.boolean().default(false),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
 });
 
 // ─── Create form ───────────────────────────────────────────────────────────
 export const createProjectSchema = projectSchema.pick({
   name: true,
   description: true,
+  thumbnail_url: true,
+  is_public: true,
 });
 
 // ─── Update form ───────────────────────────────────────────────────────────
 export const updateProjectSchema = projectSchema
-  .pick({ name: true, description: true })
+  .pick({ 
+    name: true, 
+    description: true, 
+    thumbnail_url: true, 
+    is_public: true 
+  })
   .partial();
 
 // ─── Inferred types ────────────────────────────────────────────────────────

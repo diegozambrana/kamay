@@ -37,8 +37,8 @@ export const promptVariableSchema = z.object({
 
 // ─── Base (DB record shape) ────────────────────────────────────────────────
 export const promptSchema = z.object({
-  id: z.string().uuid(),
-  project_id: z.string().uuid(),
+  id: z.uuid(),
+  project_id: z.uuid(),
   name: z
     .string()
     .min(1, "El nombre es requerido")
@@ -62,8 +62,8 @@ export const promptSchema = z.object({
     .max(128_000, "Máximo 128 000 tokens")
     .optional(),
   variables: z.array(promptVariableSchema).default([]),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
 });
 
 // ─── Create form ───────────────────────────────────────────────────────────
