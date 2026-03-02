@@ -1,0 +1,97 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { 
+  LayoutDashboard, 
+  FolderKanban, 
+  ChevronLeft,
+  ChevronRight 
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+interface NavItem {
+  title: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const navItems: NavItem[] = [
+  {
+    title: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Projects",
+    href: "/projects",
+    icon: FolderKanban,
+  },
+];
+
+export function Sidebar() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const pathname = usePathname();
+
+  return (
+    <aside
+      className={cn(
+        "relative hidden h-screen flex-none border-r bg-card transition-all duration-300 md:block",
+        isCollapsed ? "w-16" : "w-64"
+      )}
+    >
+      <div className="flex h-full flex-col">
+        <div className="flex h-14 items-center border-b px-4">
+          {!isCollapsed && (
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <span className="text-xl font-bold">Kamay</span>
+            </Link>
+          )}
+        </div>
+
+        <nav className="flex-1 space-y-1 p-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
+
+            return (
+              <Link key={item.href} href={item.href}>
+                <div
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  )}
+                >
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  {!isCollapsed && <span>{item.title}</span>}
+                </div>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="border-t p-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="w-full justify-center"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <>
+                <ChevronLeft className="h-4 w-4 mr-2" />
+                Colapsar
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+    </aside>
+  );
+}
