@@ -48,6 +48,7 @@ export async function createProject(formData: FormData) {
   if (!user) throw new Error("No autenticado");
 
   const name = formData.get("name") as string;
+  const project_id = formData.get("project_id") as string | null;
   const description = formData.get("description") as string | null;
   const thumbnail_url = formData.get("thumbnail_url") as string | null;
   const is_public = formData.get("is_public") === "true";
@@ -61,7 +62,11 @@ export async function createProject(formData: FormData) {
   };
 
   const projectService = new ProjectService(supabase);
-  const project = await projectService.createProject(projectData, user.id);
+  const project = await projectService.createProject(
+    projectData,
+    user.id,
+    project_id,
+  );
 
   revalidatePath("/projects");
   return project;
@@ -94,7 +99,7 @@ export async function updateProject(formData: FormData) {
   const project = await projectService.updateProject(
     projectId,
     projectData,
-    user.id
+    user.id,
   );
 
   revalidatePath("/projects");

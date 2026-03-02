@@ -2,7 +2,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import type { Project } from "@/lib/schemas/project";
 
 export class ProjectService {
-  constructor(private supabase: SupabaseClient) {}
+  constructor(private readonly supabase: SupabaseClient) {}
 
   async getProjectsByUserId(userId: string) {
     const { data, error } = await this.supabase
@@ -29,11 +29,13 @@ export class ProjectService {
 
   async createProject(
     projectData: Omit<Project, "id" | "created_at" | "updated_at">,
-    userId: string
+    userId: string,
+    projectId?: string | null
   ) {
     const { data, error } = await this.supabase
       .from("projects")
       .insert({
+        ...(projectId ? { id: projectId } : {}),
         ...projectData,
         user_id: userId,
       })

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MainContainer } from "@/components/layout/MainContainer";
+import { ImageDropzone } from "@/components/ui/image-dropzone";
 import { useProjectCreate } from "./hooks/useProjectCreate";
 import type { Project } from "@/lib/schemas/project";
 
@@ -19,11 +21,17 @@ interface ProjectCreateProps {
 export function ProjectCreate({
   mode = "create",
   initialProject,
-}: ProjectCreateProps) {
+}: Readonly<ProjectCreateProps>) {
+  const [thumbnailUrl, setThumbnailUrl] = useState(initialProject?.thumbnail_url ?? null);
+  const [pendingThumbnailFile, setPendingThumbnailFile] = useState<File | null>(null);
+  const [projectIdForUpload] = useState(() => initialProject?.id ?? crypto.randomUUID());
   const router = useRouter();
   const { isSubmitting, formErrors, handleSubmit } = useProjectCreate({
     mode,
     projectId: initialProject?.id,
+    thumbnailFile: pendingThumbnailFile,
+    uploadPath: projectIdForUpload,
+    uploadBucket: "projects",
   });
   const isEditMode = mode === "edit";
 
@@ -78,13 +86,36 @@ export function ProjectCreate({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="thumbnail_url">URL de imagen</Label>
+              <Label>Imagen de portada</Label>
+              <ImageDropzone
+                label="Subir imagen"
+                value={thumbnailUrl}
+                onChange={setThumbnailUrl}
+                uploadOnSelect={false}
+                onFileSelect={(file) => {
+                  setPendingThumbnailFile(file);
+                  if (file) {
+                    setThumbnailUrl(null);
+                  }
+                }}
+                bucket="projects"
+                path={projectIdForUpload}
+                maxSizeMB={10}
+                aspectRatio="video"
+              />
               <Input
                 id="thumbnail_url"
                 name="thumbnail_url"
-                type="url"
-                placeholder="https://ejemplo.com/imagen.jpg"
-                defaultValue={initialProject?.thumbnail_url ?? ""}
+                type="hidden"
+                value={thumbnailUrl ?? ""}
+                readOnly
+              />
+              <Input
+                id="project_id"
+                name="project_id"
+                type="hidden"
+                value={projectIdForUpload}
+                readOnly
               />
               {formErrors.thumbnail_url && (
                 <p className="text-sm text-destructive">
