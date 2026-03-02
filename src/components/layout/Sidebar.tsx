@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { 
   LayoutDashboard, 
   FolderKanban, 
+  Tags,
   ChevronLeft,
   ChevronRight 
 } from "lucide-react";
@@ -28,6 +29,11 @@ const navItems: NavItem[] = [
     title: "Projects",
     href: "/projects",
     icon: FolderKanban,
+  },
+  {
+    title: "Categories",
+    href: "/categories",
+    icon: Tags,
   },
 ];
 
