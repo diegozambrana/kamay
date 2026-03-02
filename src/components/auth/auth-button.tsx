@@ -1,14 +1,41 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/client";
 import { UserMenu } from "@/components/auth/user-menu";
 
-export async function AuthButton() {
-  const supabase = await createClient();
+type AuthUser = {
+  email: string;
+  fullName: string | null;
+  avatarUrl: string | null;
+};
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export function AuthButton() {
+  const [user, setUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const supabase = createClient();
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
+
+      if (!authUser) {
+        setUser(null);
+        return;
+      }
+
+      setUser({
+        email: authUser.email ?? "",
+        fullName: authUser.user_metadata?.full_name ?? null,
+        avatarUrl: authUser.user_metadata?.avatar_url ?? null,
+      });
+    };
+
+    void loadUser();
+  }, []);
 
   if (!user) {
     return (
@@ -25,9 +52,9 @@ export async function AuthButton() {
 
   return (
     <UserMenu
-      email={user.email ?? ""}
-      fullName={user.user_metadata?.full_name ?? null}
-      avatarUrl={user.user_metadata?.avatar_url ?? null}
+      email={user.email}
+      fullName={user.fullName}
+      avatarUrl={user.avatarUrl}
     />
   );
 }
