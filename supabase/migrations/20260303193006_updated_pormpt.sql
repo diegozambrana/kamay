@@ -300,8 +300,7 @@ using (((bucket_id = 'projects'::text) AND (auth.role() = 'authenticated'::text)
   as permissive
   for insert
   to authenticated
-with check (((bucket_id = 'projects'::text) AND (auth.role() = 'authenticated'::text) AND (array_length(storage.foldername(name), 1) = 1) AND ((storage.foldername(name))[1] ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12};
-::text) AND (lower(storage.extension(name)) = ANY (ARRAY['jpg'::text, 'jpeg'::text, 'png'::text, 'webp'::text, 'gif'::text]))));
+with check (((bucket_id = 'projects'::text) AND (auth.role() = 'authenticated'::text) AND (array_length(storage.foldername(name), 1) = 1) AND ((storage.foldername(name))[1] ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'::text) AND (lower(storage.extension(name)) = ANY (ARRAY['jpg'::text, 'jpeg'::text, 'png'::text, 'webp'::text, 'gif'::text]))));
 
 
 
@@ -320,8 +319,7 @@ using ((bucket_id = 'projects'::text));
   for update
   to authenticated
 using (((bucket_id = 'projects'::text) AND (auth.role() = 'authenticated'::text)))
-with check (((bucket_id = 'projects'::text) AND (auth.role() = 'authenticated'::text) AND (array_length(storage.foldername(name), 1) = 1) AND ((storage.foldername(name))[1] ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12};
-::text) AND (lower(storage.extension(name)) = ANY (ARRAY['jpg'::text, 'jpeg'::text, 'png'::text, 'webp'::text, 'gif'::text]))));
+with check (((bucket_id = 'projects'::text) AND (auth.role() = 'authenticated'::text) AND (array_length(storage.foldername(name), 1) = 1) AND ((storage.foldername(name))[1] ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'::text) AND (lower(storage.extension(name)) = ANY (ARRAY['jpg'::text, 'jpeg'::text, 'png'::text, 'webp'::text, 'gif'::text]))));
 
 
 
