@@ -8,6 +8,7 @@ import {
   LayoutDashboard, 
   FolderKanban, 
   Tags,
+  MessageSquare,
   ChevronLeft,
   ChevronRight,
   X,
@@ -30,6 +31,11 @@ const navItems: NavItem[] = [
     title: "Projects",
     href: "/projects",
     icon: FolderKanban,
+  },
+  {
+    title: "Prompts",
+    href: "/prompts",
+    icon: MessageSquare,
   },
   {
     title: "Categories",

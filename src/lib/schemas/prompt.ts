@@ -1,101 +1,112 @@
 import { z } from "zod";
 
 // ─── Enums ─────────────────────────────────────────────────────────────────
-export const promptRoleEnum = z.enum(
-  ["system", "user", "assistant"],
-  "El rol es requerido"
-);
-
-export const promptModelEnum = z.enum(
-  [
-    // OpenAI
-    "gpt-4o",
-    "gpt-4o-mini",
-    "gpt-4-turbo",
-    // Anthropic
-    "claude-3-5-sonnet-20241022",
-    "claude-3-5-haiku-20241022",
-    "claude-3-opus-20240229",
-    // Google
-    "gemini-1.5-pro",
-    "gemini-1.5-flash",
-  ],
-  "El modelo es requerido"
-);
+export const promptTypeEnum = z.enum(["text", "image", "video", "audio"]);
 
 // ─── Variable ──────────────────────────────────────────────────────────────
 // Matches {{variable_name}} tokens in prompt content
+// Format: [{"key": "tema", "default": "naturaleza"}]
 export const promptVariableSchema = z.object({
-  name: z
+  key: z
     .string()
     .min(1)
     .regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, "Nombre de variable inválido"),
-  description: z.string().max(200).optional(),
-  default_value: z.string().optional(),
-  required: z.boolean().default(true),
+  default: z.string().default(""),
 });
 
 // ─── Base (DB record shape) ────────────────────────────────────────────────
 export const promptSchema = z.object({
-  id: z.uuid(),
-  project_id: z.uuid(),
-  name: z
+  id: z.string().uuid(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime().nullable(),
+  user_id: z.string().uuid(),
+  project_id: z.string().uuid().nullable(),
+  category_id: z.string().uuid().nullable(),
+  title: z
     .string()
-    .min(1, "El nombre es requerido")
-    .max(100, "Máximo 100 caracteres"),
-  description: z.string().max(500, "Máximo 500 caracteres").optional(),
-  role: promptRoleEnum.default("user"),
+    .min(1, "El título es requerido")
+    .max(200, "Máximo 200 caracteres"),
+  description: z.string().max(1000, "Máximo 1000 caracteres").nullable(),
   content: z
     .string()
     .min(1, "El contenido es requerido")
     .max(32_000, "Máximo 32 000 caracteres"),
-  model: promptModelEnum,
-  temperature: z
-    .number()
-    .min(0, "Mínimo 0")
-    .max(2, "Máximo 2")
-    .default(0.7),
-  max_tokens: z
-    .number()
-    .int()
-    .min(1)
-    .max(128_000, "Máximo 128 000 tokens")
-    .optional(),
-  variables: z.array(promptVariableSchema).default([]),
-  created_at: z.iso.datetime(),
-  updated_at: z.iso.datetime(),
+  variables: z.array(promptVariableSchema).nullable().default([]),
+  type: promptTypeEnum.default("text"),
+  is_template: z.boolean().default(false),
 });
 
 // ─── Create form ───────────────────────────────────────────────────────────
-export const createPromptSchema = promptSchema.pick({
-  project_id: true,
-  name: true,
-  description: true,
-  role: true,
-  content: true,
-  model: true,
-  temperature: true,
-  max_tokens: true,
-  variables: true,
+export const createPromptSchema = z.object({
+  project_id: z.string().uuid().nullable().optional(),
+  category_id: z.string().uuid().nullable().optional(),
+  title: z
+    .string()
+    .min(1, "El título es requerido")
+    .max(200, "Máximo 200 caracteres"),
+  description: z.string().max(1000, "Máximo 1000 caracteres").nullable().optional(),
+  content: z
+    .string()
+    .min(1, "El contenido es requerido")
+    .max(32_000, "Máximo 32 000 caracteres"),
+  variables: z.array(promptVariableSchema).default([]),
+  type: promptTypeEnum.default("text"),
+  is_template: z.boolean().default(false),
 });
 
 // ─── Update form ───────────────────────────────────────────────────────────
-export const updatePromptSchema = promptSchema
-  .pick({
-    name: true,
-    description: true,
-    role: true,
-    content: true,
-    model: true,
-    temperature: true,
-    max_tokens: true,
-    variables: true,
+export const updatePromptSchema = z
+  .object({
+    project_id: z.string().uuid().nullable().optional(),
+    category_id: z.string().uuid().nullable().optional(),
+    title: z
+      .string()
+      .min(1, "El título es requerido")
+      .max(200, "Máximo 200 caracteres")
+      .optional(),
+    description: z.string().max(1000, "Máximo 1000 caracteres").nullable().optional(),
+    content: z
+      .string()
+      .min(1, "El contenido es requerido")
+      .max(32_000, "Máximo 32 000 caracteres")
+      .optional(),
+    variables: z.array(promptVariableSchema).optional(),
+    type: promptTypeEnum.optional(),
+    is_template: z.boolean().optional(),
   })
   .partial();
 
+// ─── Helper: Extract variables from content ───────────────────────────────
+export function extractVariablesFromContent(content: string): string[] {
+  const regex = /{{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*}}/g;
+  const matches = content.matchAll(regex);
+  const variables = new Set<string>();
+  
+  for (const match of matches) {
+    variables.add(match[1]);
+  }
+  
+  return Array.from(variables);
+}
+
+// ─── Helper: Sync variables with content ──────────────────────────────────
+export function syncVariablesWithContent(
+  content: string,
+  existingVariables: PromptVariable[]
+): PromptVariable[] {
+  const detectedKeys = extractVariablesFromContent(content);
+  const existingMap = new Map(
+    existingVariables.map((v) => [v.key, v.default])
+  );
+  
+  return detectedKeys.map((key) => ({
+    key,
+    default: existingMap.get(key) || "",
+  }));
+}
+
 // ─── Inferred types ────────────────────────────────────────────────────────
-export type PromptRole = z.infer<typeof promptRoleEnum>;
-export type PromptModel = z.infer<typeof promptModelEnum>;
+export type PromptType = z.infer<typeof promptTypeEnum>;
 export type PromptVariable = z.infer<typeof promptVariableSchema>;
 export type Prompt = z.infer<typeof promptSchema>;
 export type CreatePromptInput = z.infer<typeof createPromptSchema>;
