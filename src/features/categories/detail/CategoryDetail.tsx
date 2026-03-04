@@ -21,6 +21,7 @@ import {
 import { MainContainer } from "@/components/layout/MainContainer";
 import { useCategoryDetail } from "./hooks/useCategoryDetail";
 import type { Category } from "@/lib/schemas/category";
+import { BREADCRUMB } from "@/components/Breadcrumb";
 
 interface CategoryDetailProps {
   category: Category;
@@ -40,6 +41,7 @@ export function CategoryDetail({ category }: CategoryDetailProps) {
     <MainContainer
       title={category.name}
       description="Detalles de la categoría"
+      breadcrumb={BREADCRUMB.DETAIL_CATEGORY}
       action={
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => router.push(`/category/${category.id}/edit`)}>

@@ -23,6 +23,7 @@ import type { PromptWithRelations } from "@/services/prompts";
 import type { Project } from "@/lib/schemas/project";
 import type { Category } from "@/lib/schemas/category";
 import { extractVariablesFromContent, syncVariablesWithContent } from "@/lib/schemas/prompt";
+import { BREADCRUMB } from "@/components/Breadcrumb";
 
 interface PromptCreateProps {
   mode?: "create" | "edit";
@@ -87,6 +88,7 @@ export function PromptCreate({
           ? `Editando: ${initialPrompt?.title ?? "Prompt"}`
           : "Crea un nuevo prompt"
       }
+      breadcrumb={isEditMode ? BREADCRUMB.EDIT_PROMPT : BREADCRUMB.CREATE_PROMPT}
     >
       <div className="">
 

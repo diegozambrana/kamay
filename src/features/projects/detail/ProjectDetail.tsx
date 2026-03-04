@@ -23,6 +23,7 @@ import { MainContainer } from "@/components/layout/MainContainer";
 import { useProjectDetail } from "./hooks/useProjectDetail";
 import type { Project } from "@/lib/schemas/project";
 import Image from "next/image";
+import { BREADCRUMB } from "@/components/Breadcrumb";
 
 interface ProjectDetailProps {
   project: Project;
@@ -42,6 +43,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
     <MainContainer
       title={project.name}
       description="Detalles del proyecto"
+      breadcrumb={BREADCRUMB.DETAIL_PROJECT}
       action={
         <div className="flex gap-2">
           <Button

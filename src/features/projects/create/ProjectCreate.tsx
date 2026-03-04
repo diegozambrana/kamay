@@ -12,6 +12,7 @@ import { MainContainer } from "@/components/layout/MainContainer";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
 import { useProjectCreate } from "./hooks/useProjectCreate";
 import type { Project } from "@/lib/schemas/project";
+import { BREADCRUMB } from "@/components/Breadcrumb";
 
 interface ProjectCreateProps {
   mode?: "create" | "edit";
@@ -43,6 +44,7 @@ export function ProjectCreate({
           ? `Editando: ${initialProject?.name ?? "Proyecto"}`
           : "Crea un nuevo proyecto"
       }
+      breadcrumb={isEditMode ? BREADCRUMB.EDIT_PROJECT : BREADCRUMB.CREATE_PROJECT}
     >
       <Card className="max-w-2xl">
         <CardHeader>

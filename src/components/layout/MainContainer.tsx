@@ -1,9 +1,11 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { Breadcrumb } from "../Breadcrumb/Breadcrumb";
 
 interface MainContainerProps {
   title: string;
   description?: string;
+  breadcrumb?: string;
   action?: React.ReactNode;
   children: React.ReactNode;
   isEmpty?: boolean;
@@ -14,6 +16,7 @@ interface MainContainerProps {
 export const MainContainer = ({
   title,
   description,
+  breadcrumb,
   action,
   children,
   isEmpty,
@@ -32,6 +35,7 @@ export const MainContainer = ({
 
   return (
     <div className="p-6 space-y-6">
+      {breadcrumb && <Breadcrumb type={breadcrumb} />}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{title}</h2>

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MainContainer } from "@/components/layout/MainContainer";
 import { useCategoryCreate } from "./hooks/useCategoryCreate";
 import type { Category } from "@/lib/schemas/category";
+import { BREADCRUMB } from "@/components/Breadcrumb";
 
 interface CategoryCreateProps {
   mode?: "create" | "edit";
@@ -53,6 +54,7 @@ export function CategoryCreate({ mode = "create", initialCategory }: Readonly<Ca
           ? `Editando: ${initialCategory?.name ?? "Categoría"}`
           : "Crea una nueva categoría"
       }
+      breadcrumb={isEditMode ? BREADCRUMB.EDIT_CATEGORY : BREADCRUMB.CREATE_CATEGORY}
     >
       <Card className="max-w-2xl">
         <CardHeader>

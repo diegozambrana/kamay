@@ -15,6 +15,7 @@ import { MainContainer } from "@/components/layout/MainContainer";
 import { Pencil, Trash2 } from "lucide-react";
 import { usePromptDetail } from "./hooks/usePromptDetail";
 import type { PromptWithRelations } from "@/services/prompts";
+import { BREADCRUMB } from "@/components/Breadcrumb";
 
 interface PromptDetailProps {
   prompt: PromptWithRelations;
@@ -34,6 +35,7 @@ export function PromptDetail({ prompt }: Readonly<PromptDetailProps>) {
     <MainContainer
       title={prompt.title}
       description={prompt.description || "Sin descripción"}
+      breadcrumb={BREADCRUMB.DETAIL_PROMPT}
       action={
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleEdit}>
